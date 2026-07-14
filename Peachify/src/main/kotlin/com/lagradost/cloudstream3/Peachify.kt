@@ -284,10 +284,9 @@ class Peachify : MainAPI() {
         subtitleCallback: (SubtitleFile) -> Unit
     ) {
         try {
-            // Parse JSON response
-            val sourcesRegex = \""url\\":\\"([^\\"]+)\"\"\""\n                .toRegex()
-            val qualityRegex = \""quality\\":\\"([^\\"]+)\"\"\""\n                .toRegex()
-            val typeRegex = \""type\\":\\"([^\\"]+)\"\"\""\n                .toRegex()
+            val sourcesRegex = "\"url\":\"([^\"]+)\"".toRegex()
+            val qualityRegex = "\"quality\":\"([^\"]+)\"".toRegex()
+            val typeRegex = "\"type\":\"([^\"]+)\"".toRegex()
 
             sourcesRegex.findAll(response).forEach { matchResult ->
                 val sourceUrl = matchResult.groupValues[1]
@@ -308,8 +307,7 @@ class Peachify : MainAPI() {
                 }
             }
 
-            // Parse subtitles
-            val subtitleRegex = \""url\\":\\"([^\\"]+)\\",\\"label\\":\\"([^\\"]+)\\",\\"format\\":\\"vtt\"\"\""\n                .toRegex()
+            val subtitleRegex = "\"url\":\"([^\"]+)\",\"label\":\"([^\"]+)\",\"format\":\"vtt\"".toRegex()
             subtitleRegex.findAll(response).forEach { matchResult ->
                 val subUrl = matchResult.groupValues[1]
                 val language = matchResult.groupValues[2]
@@ -342,7 +340,6 @@ class Peachify : MainAPI() {
     }
 
     private fun extractImdbId(url: String): String {
-        // Extract ID from URL, adjust based on actual URL structure
         return url.split("/").lastOrNull { it.isNotEmpty() } ?: ""
     }
 }

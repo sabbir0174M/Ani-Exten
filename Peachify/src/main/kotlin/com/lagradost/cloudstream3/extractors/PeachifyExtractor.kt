@@ -27,14 +27,12 @@ class Peachify : ExtractorApi() {
         callback: (ExtractorLink) -> Unit
     ) {
         try {
-            // Extract media ID and type from URL
             val mediaId = extractMediaId(url)
             val isMovie = url.contains("/movie/")
             val isSeries = url.contains("/tv/") || url.contains("/series/")
 
             if (mediaId.isEmpty()) return
 
-            // Try multiple servers for redundancy
             peachifyServers.apmap { server ->
                 try {
                     val apiUrl = when {
@@ -94,11 +92,10 @@ class Peachify : ExtractorApi() {
         subtitleCallback: (SubtitleFile) -> Unit
     ) {
         try {
-            // Parse sources
-            val sourcesPattern = \""(?:src|url)\\"?:\\"?([^\\"\\s,}]+)\"\"\""\n                .toRegex()
-            val qualityPattern = \""(?:quality|height|resolution)\\"?:\\"?(\\d+)\"\"\""\n                .toRegex()
-            val typePattern = \""(?:type|format)\\"?:\\"?([^\\"\\s,}]+)\"\"\""\n                .toRegex()
-            val dubPattern = \""(?:dub|audio|language)\\"?:\\"?([^\\"\\s,}]+)\"\"\""\n                .toRegex()
+            val sourcesPattern = "(?:src|url)\"?:\"?([^\"\\s,}]+)".toRegex()
+            val qualityPattern = "(?:quality|height|resolution)\"?:\"?(\\d+)".toRegex()
+            val typePattern = "(?:type|format)\"?:\"?([^\"\\s,}]+)".toRegex()
+            val dubPattern = "(?:dub|audio|language)\"?:\"?([^\"\\s,}]+)".toRegex()
 
             val sourcesMatches = sourcesPattern.findAll(responseText).map { it.groupValues[1] }.toList()
             val qualities = qualityPattern.findAll(responseText).map { it.groupValues[1].toIntOrNull() ?: 0 }.toList()
@@ -134,12 +131,11 @@ class Peachify : ExtractorApi() {
                 }
             }
 
-            // Parse subtitles
-            val subtitlePattern = \""\\{[^}]*(?:subtitle|subs|caption)[^}]*\\}\"\"\""\n                .toRegex()
+            val subtitlePattern = "\\{[^}]*(?:subtitle|subs|caption)[^}]*\\}".toRegex()
             subtitlePattern.findAll(responseText).forEach { match ->
                 val subtitleBlock = match.value
-                val urlPattern = \""(?:url|src)\\"?:\\"?([^\\"\\s,}]+)\"\"\""\n                    .toRegex()
-                val langPattern = \""(?:lang|language|label)\\"?:\\"?([^\\"\\s,}]+)\"\"\""\n                    .toRegex()
+                val urlPattern = "(?:url|src)\"?:\"?([^\"\\s,}]+)".toRegex()
+                val langPattern = "(?:lang|language|label)\"?:\"?([^\"\\s,}]+)".toRegex()
 
                 val subUrl = urlPattern.find(subtitleBlock)?.groupValues?.get(1)
                 val lang = langPattern.find(subtitleBlock)?.groupValues?.get(1)

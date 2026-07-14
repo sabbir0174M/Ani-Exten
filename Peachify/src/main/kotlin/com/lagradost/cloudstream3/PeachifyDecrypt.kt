@@ -13,7 +13,6 @@ object PeachifyDecrypt {
      */
     fun decryptData(encryptedData: String, key: String = ""): String? {
         return try {
-            // Try base64 decode first
             if (encryptedData.contains("=") || encryptedData.length % 4 == 0) {
                 try {
                     val decoded = Base64.decode(encryptedData, Base64.DEFAULT)
@@ -61,14 +60,12 @@ object PeachifyDecrypt {
         val sources = mutableListOf<StreamSource>()
         
         try {
-            // Decrypt the response
             val decrypted = decryptData(encryptedResponse) ?: return sources
             
-            // Extract sources using regex
-            val sourceRegex = \"(?:\\\\\"url\\\\\":|\\\\\"src\\\\\":|src=)\\\\\"?([^\\\\\"\\s,}]+)\"\"\"\n                .toRegex()
-            val qualityRegex = \"(?:\\\\\"quality\\\\\":|\\\\\"resolution\\\\\":|quality=)\\\\\"?(\\d+)\"\"\"\n                .toRegex()
-            val typeRegex = \"(?:\\\\\"type\\\\\":|\\\\\"format\\\\\":|type=)\\\\\"?([^\\\\\"\\s,}]+)\"\"\"\n                .toRegex()
-            val dubRegex = \"(?:\\\\\"dub\\\\\":|\\\\\"audio\\\\\":|dub=)\\\\\"?([^\\\\\"\\s,}]+)\"\"\"\n                .toRegex()
+            val sourceRegex = "(?:\\"url\\":|\\"src\\":|src=)\\"?([^\\"\\s,}]+)".toRegex()
+            val qualityRegex = "(?:\\"quality\\":|\\"resolution\\":|quality=)\\"?(\\d+)".toRegex()
+            val typeRegex = "(?:\\"type\\":|\\"format\\":|type=)\\"?([^\\"\\s,}]+)".toRegex()
+            val dubRegex = "(?:\\"dub\\":|\\"audio\\":|dub=)\\"?([^\\"\\s,}]+)".toRegex()
 
             sourceRegex.findAll(decrypted).forEach { match ->
                 val url = match.groupValues[1]
